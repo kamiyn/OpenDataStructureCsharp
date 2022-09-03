@@ -356,6 +356,26 @@ public class Chapter1
     }
 }
 
+internal static class Util
+{
+    internal static void ItemCopy<T>(int srcStart, int destStart, int length, T[] source,
+        T[] destination)
+    {
+        if (length < 0
+            || srcStart < 0
+            || destStart < 0
+            || srcStart + length > source.Length
+            || destStart + length > destination.Length
+           )
+        {
+            // ItemCopy は境界エラーに対して 静かに無視している。GO 言語流儀で エラーの原因を返すのが望ましい
+            return;
+        }
+
+        new ArraySegment<T>(source, srcStart, length).CopyTo(destination, destStart);
+    }
+}
+
 // 問1.6 最も簡単なものは要素を配列に入れておく方法だ
 internal class Chapter1List<T> : IMyList<T> where T : class, IEquatable<T>
 {
@@ -370,9 +390,9 @@ internal class Chapter1List<T> : IMyList<T> where T : class, IEquatable<T>
     public void add(int i, T x)
     {
         T[] addedItems = new T[_items.Length + 1];
-        ItemCopy(0, 0, i, _items, addedItems);
+        Util.ItemCopy(0, 0, i, _items, addedItems);
         addedItems[i] = x;
-        ItemCopy(i, i + 1, _items.Length - i, _items, addedItems);
+        Util.ItemCopy(i, i + 1, _items.Length - i, _items, addedItems);
         // ここで以前の _items は捨てたい
         _items = addedItems;
     }
@@ -380,27 +400,11 @@ internal class Chapter1List<T> : IMyList<T> where T : class, IEquatable<T>
     public void remove(int i)
     {
         T[] removedItems = new T[_items.Length - 1];
-        ItemCopy(0, 0, i, _items, removedItems);
+        Util.ItemCopy(0, 0, i, _items, removedItems);
         // src の i 番目を捨てる
-        ItemCopy(i + 1, i, _items.Length - i - 1, _items, removedItems);
+        Util.ItemCopy(i + 1, i, _items.Length - i - 1, _items, removedItems);
         // ここで以前の _items は捨てたい
         _items = removedItems;
-    }
-
-    private static void ItemCopy(int srcStart, int destStart, int length, T[] source, T[] destination)
-    {
-        if (length < 0
-            || srcStart < 0
-            || destStart < 0
-            || srcStart + length > source.Length
-            || destStart + length > destination.Length
-           )
-        {
-            // ItemCopy は境界エラーに対して 静かに無視している。GO 言語流儀で エラーの原因を返すのが望ましい
-            return;
-        }
-
-        source.AsSpan(srcStart, length).CopyTo(destination.AsSpan(destStart, length));
     }
 }
 
@@ -423,7 +427,7 @@ internal class Chapter1USet<T> : IUSet<T> where T : class, IEquatable<T>
 
         T[] addedItems = new T[_items.Length + 1];
         addedItems[0] = x;
-        ItemCopy(0, 1, _items.Length, _items, addedItems);
+        Util.ItemCopy(0, 1, _items.Length, _items, addedItems);
 
         // ここで以前の _items は捨てたい
         _items = addedItems;
@@ -450,22 +454,6 @@ internal class Chapter1USet<T> : IUSet<T> where T : class, IEquatable<T>
         }
 
         _items = removedItems;
-    }
-
-    private static void ItemCopy(int srcStart, int destStart, int length, T[] source, T[] destination)
-    {
-        if (length < 0
-            || srcStart < 0
-            || destStart < 0
-            || srcStart + length > source.Length
-            || destStart + length > destination.Length
-           )
-        {
-            // ItemCopy は境界エラーに対して 静かに無視している。GO 言語流儀で エラーの原因を返すのが望ましい
-            return;
-        }
-
-        source.AsSpan(srcStart, length).CopyTo(destination.AsSpan(destStart, length));
     }
 }
 
@@ -504,7 +492,7 @@ internal class Chapter1SSet<T> : ISSet<T> where T : class, IComparable<T>
 
         T[] addedItems = new T[_items.Length + 1];
         addedItems[0] = x;
-        ItemCopy(0, 1, _items.Length, _items, addedItems);
+        Util.ItemCopy(0, 1, _items.Length, _items, addedItems);
 
         // ここで以前の _items は捨てたい
         _items = addedItems;
@@ -531,21 +519,5 @@ internal class Chapter1SSet<T> : ISSet<T> where T : class, IComparable<T>
         }
 
         _items = removedItems;
-    }
-
-    private static void ItemCopy(int srcStart, int destStart, int length, T[] source, T[] destination)
-    {
-        if (length < 0
-            || srcStart < 0
-            || destStart < 0
-            || srcStart + length > source.Length
-            || destStart + length > destination.Length
-           )
-        {
-            // ItemCopy は境界エラーに対して 静かに無視している。GO 言語流儀で エラーの原因を返すのが望ましい
-            return;
-        }
-
-        source.AsSpan(srcStart, length).CopyTo(destination.AsSpan(destStart, length));
     }
 }
