@@ -7,4 +7,8 @@ https://www.lambdanote.com/products/opendatastructures
 の演習問題を実装したサンプルです。
 
 データ構造に対する演習というよりも
-C# Span<T> の手習いが目的でコードを書いていました
+C# ~~Span~~ ArraySegment の手習いが目的でコードを書いていました
+
+Span をやめたのは100万行という前提に対してスタックの利用は不適切と判断したからです。
+
+https://docs.microsoft.com/ja-jp/dotnet/standard/memory-and-spans/memory-t-usage-guidelines
